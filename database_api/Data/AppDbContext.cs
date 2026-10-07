@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using database_api.models;
+using SINEVEL.database_api.models;
 
-namespace database_api.Data
+namespace SINEVEL.database_api.Data
 {
     public class AppDbContext : DbContext
     {
@@ -9,6 +9,6 @@ namespace database_api.Data
 
 
         // Bloque de inventario
-        public DbSet<Inventario_Model> Inventario { get; set; }
+        public DbSet<Productos> Productos { get; set; }
     }
 }

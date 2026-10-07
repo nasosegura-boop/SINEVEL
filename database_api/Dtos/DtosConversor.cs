@@ -1,22 +1,26 @@
 
-using SINEVEL.database_api.models;
 using System.Collections.Generic;
+using SINEVEL.database_api.models;
 
 namespace SINEVEL.database_api.Dtos
 {
     public static class DtosConversor
     {
-        public static productosDto ToDto(this Productos P)
+        public static List<ProductosDto> ConvertirDto(this List<Productos> productos)
         {
-            return new productosDto
+            List<ProductosDto> Lista = new List<ProductosDto>();
+            foreach (var producto in productos)
             {
-                id_producto = P.id_producto,
-                producto = P.producto,
-                precio = P.precio,
-                cantidad_s1 = P.cantidad_s1,
-                cantidad_s2 = P.cantidad_s2
-
-            };
-        }|
+                Lista.Add(new ProductosDto
+                {
+                    producto = producto.producto,
+                    proveedor = producto.proveedor,
+                    cantidad_s1 = producto.cantidad_s1,
+                    cantidad_s2 = producto.cantidad_s2,
+                    precio = producto.precio
+                });
+            }
+            return Lista;
+        }     
     }
 }
