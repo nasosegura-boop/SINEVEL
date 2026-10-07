@@ -1,8 +1,11 @@
-namespace SINEVEL.Dtos
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace SINEVEL.database_api.models
 {
     public class Productos
     {
-        public int id_producto { get; set; }
+        [Key] public int id_producto { get; set; }
         public string producto { get; set; } = string.Empty;
         public string proveedor { get; set; } = string.Empty;
         public decimal cantidad_s1 { get; set; }
