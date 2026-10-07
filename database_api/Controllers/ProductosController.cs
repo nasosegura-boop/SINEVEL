@@ -17,19 +17,60 @@ namespace SINEVEL.database_api.Controllers
             _context = context;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<List<Productos>>> Get()
+        [HttpGet ("id")]
+        public Productos GetProductoById(int id)
         {
-            return Ok(await _context.Productos.ToListAsync());
+            var producto = _context.Productos.FirstOrDefault(p => p.id_producto == id);
+            if (producto == null)
+            {
+                return null;
+            }
+            return producto;
+        }
+
+        [HttpGet ("codigo_barras")]
+        public Productos GetProductoByCodigoBarras(string codigo_barras)
+        {
+            var producto = _context.Productos.FirstOrDefault(p => p.codigo_barras == codigo_barras);
+            if (producto == null)
+            {
+                return null;
+            }
+            return producto;
+        }
+
+        [HttpDelete("id")]
+        public bool DeleteProductoById(int id)
+        {
+            var producto = _context.Productos.FirstOrDefault(p => p.id_producto == id);
+            if (producto == null)
+            {
+                return false;
+            }
+            _context.Productos.Remove(producto);
+            _context.SaveChanges();
+            return true;
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<Productos>>> AddProducto(Productos producto)
+        public Productos CreateProducto(Productos p)
         {
-            _context.Productos.Add(producto);
-            await _context.SaveChangesAsync();
+            _context.Productos.Add(p);
+            _context.SaveChanges();
+            return p;
+        }
 
-            return Ok(await _context.Productos.ToListAsync());
+        [HttpPut("id")]
+        public Productos UpdateProducto(int id, Productos p)
+        {
+            var producto = _context.Productos.FirstOrDefault(pp => pp.id_producto == id);
+            if (producto == null)
+            {
+                return null;
+            }
+            _context.Productos.Update(p);
+            _context.SaveChanges();
+            return p;
         }
     }
 }
