@@ -19,3 +19,5 @@ export async function darEntrada(codigo, cantidad) {
 export async function darSalida(codigo, cantidad) {
   console.log("Dar salida:", { codigo, cantidad });
 }
+
+

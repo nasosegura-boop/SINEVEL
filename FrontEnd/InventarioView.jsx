@@ -36,9 +36,14 @@ const ACCIONES = [
 ];
 
 export default function InventarioView({
-  productos = PRODUCTOS_EJEMPLO,
+  productos = [],
+  cargando = false,
+  error = false,
+  seleccionadoId = null,
+  nombreSeleccionado = "",
   activeNav = "inventario",
   onNavegar = () => { },
+  onSeleccionar = () => { },
   onAccion = () => { },
   onBuscar = () => { },
 }) {
@@ -137,10 +142,16 @@ export default function InventarioView({
                   </tr>
                 </thead>
                 <tbody>
-                  {productos.map((p, i) => (
+                  {productos.map((p) => (
                     <tr
-                      key={`${p.codigo}-${i}`}
-                      className="border-b border-gray-100 transition-colors last:border-0 hover:bg-[#fdf3e4]"
+                      key={p.id}
+                      onClick={() => onSeleccionar(p.id === seleccionadoId ? null : p.id)}
+                      className={[
+                        "cursor-pointer border-b border-gray-100 transition-colors last:border-0",
+                        p.id === seleccionadoId
+                          ? "bg-[#fdf3e4] outline outline-1 -outline-offset-1 outline-[#d79c43]"
+                          : "hover:bg-[#fdf3e4]",
+                      ].join(" ")}
                     >
                       <td className="px-4 py-2 font-mono text-xs text-gray-500">
                         {p.codigo}
@@ -157,15 +168,14 @@ export default function InventarioView({
                       </td>
                     </tr>
                   ))}
-                  {productos.length === 0 && (
-                    <tr>
-                      <td
-                        colSpan={5}
-                        className="px-4 py-10 text-center text-gray-400"
-                      >
-                        No se encontraron productos.
-                      </td>
-                    </tr>
+                  {cargando && (
+                    <tr><td colSpan={5} className="px-4 py-10 text-center text-gray-400">Cargando inventario...</td></tr>
+                  )}
+                  {error && (
+                    <tr><td colSpan={5} className="px-4 py-10 text-center text-red-500">No se pudo conectar con el servidor.</td></tr>
+                  )}
+                  {!cargando && !error && productos.length === 0 && (
+                    <tr><td colSpan={5} className="px-4 py-10 text-center text-gray-400">No se encontraron productos.</td></tr>
                   )}
                 </tbody>
               </table>
@@ -177,6 +187,16 @@ export default function InventarioView({
             <div className="rounded-xl border border-[#d79c43]/30 bg-[#4e4e4e] p-4">
               <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#e3b462]">
                 Acciones de inventario
+              </p>
+              <p className="mb-3 truncate text-xs text-gray-200">
+                {nombreSeleccionado ? (
+                  <>
+                    Seleccionado:{" "}
+                    <span className="font-semibold text-white">{nombreSeleccionado}</span>
+                  </>
+                ) : (
+                  "Selecciona un producto de la tabla"
+                )}
               </p>
               <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-2">
                 {ACCIONES.map(({ key, label, Icon }, i) => {
