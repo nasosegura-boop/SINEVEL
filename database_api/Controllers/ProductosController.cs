@@ -17,7 +17,7 @@ namespace SINEVEL.database_api.Controllers
             _context = context;
         }
 
-        [HttpGet ("id")]
+        [HttpGet("id")]
         public Productos GetProductoById(int id)
         {
             var producto = _context.Productos.FirstOrDefault(p => p.id_producto == id);
@@ -28,7 +28,7 @@ namespace SINEVEL.database_api.Controllers
             return producto;
         }
 
-        [HttpGet ("codigo_barras")]
+        [HttpGet("codigo_barras")]
         public Productos GetProductoByCodigoBarras(string codigo_barras)
         {
             var producto = _context.Productos.FirstOrDefault(p => p.codigo_barras == codigo_barras);
@@ -39,7 +39,7 @@ namespace SINEVEL.database_api.Controllers
             return producto;
         }
 
-        [HttpDelete("id")]
+        [HttpDelete("{id}")]
         public bool DeleteProductoById(int id)
         {
             var producto = _context.Productos.FirstOrDefault(p => p.id_producto == id);
@@ -60,17 +60,29 @@ namespace SINEVEL.database_api.Controllers
             return p;
         }
 
-        [HttpPut("id")]
-        public Productos UpdateProducto(int id, Productos p)
+        [HttpPut("{id:int}")]
+        public ActionResult<Productos> UpdateProducto(int id, Productos p)
         {
             var producto = _context.Productos.FirstOrDefault(pp => pp.id_producto == id);
-            if (producto == null)
-            {
-                return null;
-            }
-            _context.Productos.Update(p);
+            if (producto == null) return NotFound();
+            producto.producto = p.producto;
+            producto.proveedor = p.proveedor;
+            producto.cantidad_s1 = p.cantidad_s1;
+            producto.cantidad_s2 = p.cantidad_s2;
+            producto.precio = p.precio;
+            producto.codigo_barras = p.codigo_barras;
+
             _context.SaveChanges();
-            return p;
+            return Ok(producto);
+        }
+
+        [HttpGet]
+        public ActionResult<List<ProductosDto>> GetProductos()
+        {
+
+
+            var productos = _context.Productos.ToList();
+            return Ok(productos.ConvertirDto());
         }
     }
 }

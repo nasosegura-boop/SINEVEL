@@ -17,7 +17,8 @@ namespace SINEVEL.database_api.Dtos
                     producto = producto.producto,
                     cantidad_s1 = producto.cantidad_s1,
                     cantidad_s2 = producto.cantidad_s2,
-                    precio = producto.precio
+                    precio = producto.precio,
+                    codigo_barras = producto.codigo_barras,
                 });
             }
             return Lista;

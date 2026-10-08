@@ -7,7 +7,6 @@ namespace SINEVEL.database_api.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-
         // Bloque de inventario
         public DbSet<Productos> Productos { get; set; }
     }

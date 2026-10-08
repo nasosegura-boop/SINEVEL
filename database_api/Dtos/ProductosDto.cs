@@ -7,6 +7,7 @@ namespace SINEVEL.database_api.Dtos
         public decimal cantidad_s1 { get; set; }
         public decimal cantidad_s2 { get; set; }
         public decimal precio { get; set; }
+        public string codigo_barras { get; set; } = string.Empty;   
 
     }
 }
