@@ -13,8 +13,8 @@ namespace SINEVEL.database_api.Dtos
             {
                 Lista.Add(new ProductosDto
                 {
+                    id_producto = producto.id_producto,
                     producto = producto.producto,
-                    proveedor = producto.proveedor,
                     cantidad_s1 = producto.cantidad_s1,
                     cantidad_s2 = producto.cantidad_s2,
                     precio = producto.precio
