@@ -4,7 +4,7 @@ using SINEVEL.database_api.models;
 
 namespace SINEVEL.database_api.Dtos
 {
-    public static class DtosConversor
+    public static class ProductosConversor
     {
         public static List<ProductosDto> ConvertirDto(this List<Productos> productos)
         {
