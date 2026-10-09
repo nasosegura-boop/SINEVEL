@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SINEVEL.database_api.Data;
+using SINEVEL.database_api.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,9 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Inyección de dependencias: el controlador recibe la interfaz, aquí se decide la implementación
+builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
 
 var app = builder.Build();
 

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SINEVEL.database_api.models;
 using SINEVEL.database_api.Dtos;
-using SINEVEL.database_api.Data;
+using SINEVEL.database_api.Repositories;
 
 namespace SINEVEL.database_api.Controllers
 {
@@ -9,24 +9,23 @@ namespace SINEVEL.database_api.Controllers
     [Route("api/[controller]")]
     public class ProductosController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IProductoRepository _repo;
 
-        public ProductosController(AppDbContext context)
+        public ProductosController(IProductoRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
 
         [HttpGet]
         public ActionResult<List<ProductosDto>> GetProductos()
         {
-            var productos = _context.Productos.ToList();
-            return Ok(productos.ConvertirDto());
+            return Ok(_repo.ObtenerTodos().ConvertirDto());
         }
 
         [HttpGet("{id:int}")]
         public ActionResult<ProductosDto> GetProductoById(int id)
         {
-            var producto = _context.Productos.FirstOrDefault(p => p.id_producto == id);
+            var producto = _repo.ObtenerPorId(id);
             if (producto == null) return NotFound();
             return Ok(producto.ConvertirDto());
         }
@@ -34,7 +33,7 @@ namespace SINEVEL.database_api.Controllers
         [HttpGet("codigo_barras")]
         public ActionResult<ProductosDto> GetProductoByCodigoBarras(string codigo_barras)
         {
-            var producto = _context.Productos.FirstOrDefault(p => p.codigo_barras == codigo_barras);
+            var producto = _repo.ObtenerPorCodigoBarras(codigo_barras);
             if (producto == null) return NotFound();
             return Ok(producto.ConvertirDto());
         }
@@ -45,8 +44,8 @@ namespace SINEVEL.database_api.Controllers
             if (p.cantidad_s1 < 0 || p.cantidad_s2 < 0 || p.precio < 0)
                 return BadRequest("Stock y precio no pueden ser negativos.");
 
-            _context.Productos.Add(p);
-            _context.SaveChanges();
+            _repo.Agregar(p);
+            _repo.Guardar();
             return Ok(p.ConvertirDto());
         }
 
@@ -56,7 +55,7 @@ namespace SINEVEL.database_api.Controllers
             if (p.cantidad_s1 < 0 || p.cantidad_s2 < 0 || p.precio < 0)
                 return BadRequest("Stock y precio no pueden ser negativos.");
 
-            var producto = _context.Productos.FirstOrDefault(pp => pp.id_producto == id);
+            var producto = _repo.ObtenerPorId(id);
             if (producto == null) return NotFound();
 
             producto.producto = p.producto;
@@ -66,18 +65,18 @@ namespace SINEVEL.database_api.Controllers
             producto.precio = p.precio;
             producto.codigo_barras = p.codigo_barras;
 
-            _context.SaveChanges();
+            _repo.Guardar();
             return Ok(producto.ConvertirDto());
         }
 
         [HttpDelete("{id:int}")]
         public IActionResult DeleteProductoById(int id)
         {
-            var producto = _context.Productos.FirstOrDefault(p => p.id_producto == id);
+            var producto = _repo.ObtenerPorId(id);
             if (producto == null) return NotFound();
 
-            _context.Productos.Remove(producto);
-            _context.SaveChanges();
+            _repo.Eliminar(producto);
+            _repo.Guardar();
             return NoContent();
         }
 
@@ -85,13 +84,13 @@ namespace SINEVEL.database_api.Controllers
         [HttpPost("{id:int}/entrada")]
         public ActionResult<ProductosDto> DarEntrada(int id, MovimientoStockDto mov)
         {
-            var producto = _context.Productos.FirstOrDefault(p => p.id_producto == id);
+            var producto = _repo.ObtenerPorId(id);
             if (producto == null) return NotFound();
 
             try { producto.DarEntrada(mov.sucursal, mov.cantidad); }
             catch (ArgumentException ex) { return BadRequest(ex.Message); }
 
-            _context.SaveChanges();
+            _repo.Guardar();
             return Ok(producto.ConvertirDto());
         }
 
@@ -99,14 +98,14 @@ namespace SINEVEL.database_api.Controllers
         [HttpPost("{id:int}/salida")]
         public ActionResult<ProductosDto> DarSalida(int id, MovimientoStockDto mov)
         {
-            var producto = _context.Productos.FirstOrDefault(p => p.id_producto == id);
+            var producto = _repo.ObtenerPorId(id);
             if (producto == null) return NotFound();
 
             try { producto.DarSalida(mov.sucursal, mov.cantidad); }
             catch (ArgumentException ex) { return BadRequest(ex.Message); }
             catch (InvalidOperationException ex) { return Conflict(ex.Message); }
 
-            _context.SaveChanges();
+            _repo.Guardar();
             return Ok(producto.ConvertirDto());
         }
     }
